@@ -1,0 +1,30 @@
+{
+    "version": 2,
+    "framework": "laravel",
+    "builds": [
+        {
+            "src": "public/index.php",
+            "use": "@vercel/php"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/public/index.php"
+        }
+    ],
+    "env": {
+        "APP_ENV": "production",
+        "APP_DEBUG": "false",
+        "APP_URL": "https://your-portfolio.vercel.app",
+        "DB_CONNECTION": "sqlite",
+        "MAIL_MAILER": "smtp",
+        "MAIL_HOST": "smtp.gmail.com",
+        "MAIL_PORT": "587",
+        "MAIL_USERNAME": "darsha.anuardha2020@gmail.com",
+        "MAIL_PASSWORD": "@mail_password",
+        "MAIL_ENCRYPTION": "tls",
+        "MAIL_FROM_ADDRESS": "darsha.anuardha2020@gmail.com",
+        "MAIL_FROM_NAME": "G.B.D Anuradha Portfolio"
+    }
+} 
