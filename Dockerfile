@@ -1,31 +1,35 @@
+# Start from official PHP image with Apache
 FROM php:8.2-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev unzip git sqlite3 \
+    libzip-dev \
+    unzip \
+    git \
+    sqlite3 \
+    libsqlite3-dev \
     && docker-php-ext-install zip pdo pdo_sqlite
 
-# Enable Apache mod_rewrite
+# Enable Apache rewrite module
 RUN a2enmod rewrite
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy existing application directory
+# Copy Composer from the Composer image
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Copy application files
 COPY . .
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Install Laravel dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
-RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Create SQLite file
-RUN mkdir -p database && touch database/database.sqlite
+# Expose port for Laravel
+EXPOSE 8000
 
-# Expose port 80 and start Apache
-EXPOSE 80
-CMD ["apache2-foreground"]
+# Start Laravel server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

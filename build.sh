@@ -15,3 +15,6 @@ php artisan migrate --force
 
 # Link storage
 php artisan storage:link
+
+
+
