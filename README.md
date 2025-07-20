@@ -192,4 +192,5 @@ APP_ENV	production
 APP_KEY	Paste result of php artisan key:generate --show (starts with base64:)
 APP_DEBUG	false
 DB_CONNECTION	sqlite
-DB_DATABASE	/opt/render/project/src/database/database.sqlite -->
+DB_DATABASE	/opt/render/project/src/database/database.sqlite 
+DB_DATABASE=/var/www/html/database/database.sqlite-->
