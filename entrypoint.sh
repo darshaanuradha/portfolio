@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # ✅ Create SQLite file if it doesn’t exist
-if [ ! -f /opt/render/project/src/database/database.sqlite ]; then
-  echo "Creating SQLite DB file..."
-  touch /opt/render/project/src/database/database.sqlite
-fi
+# if [ ! -f /opt/render/project/src/database/database.sqlite ]; then
+#   echo "Creating SQLite DB file..."
+#   touch /opt/render/project/src/database/database.sqlite
+# fi
 
 # ✅ Permissions
 chown -R www-data:www-data /opt/render/project/src/storage /opt/render/project/src/bootstrap/cache
