@@ -1,37 +1,40 @@
 FROM php:8.2-apache
 
-RUN apt-get update && apt-get install -y 
-RUN libzip-dev unzip git sqlite3 libsqlite3-dev curl 
-RUN docker-php-ext-install zip pdo pdo_sqlite 
-RUN a2enmod rewrite 
-RUN rm -rf /var/lib/apt/lists/*
+# Update and install all dependencies properly in one RUN block
+RUN apt-get update && apt-get install -y \
+    libzip-dev unzip git sqlite3 libsqlite3-dev curl \
+    && docker-php-ext-install zip pdo pdo_sqlite \
+    && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js & npm
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - 
-RUN apt-get install -y nodejs 
-RUN  npm install -g npm
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set workdir
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy Composer
+# Copy Composer binary
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy files
+# Copy project files
 COPY . .
 
-# Install PHP deps
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install and build frontend
+# Install Node modules and build frontend assets
+RUN npm install
 RUN npm run build
 
-# Copy entrypoint
+# Copy and set permissions for entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Final permissions
+# Set ownership for Laravel folders and built assets
 RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
-# Start app
+# Start Laravel app using entrypoint script
 CMD ["/entrypoint.sh"]
