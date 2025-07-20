@@ -13,10 +13,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 
 # Set workdir
 WORKDIR /var/www/html
-RUN touch /opt/render/project/src/database/database.sqlite \
-    && chown -R www-data:www-data /opt/render/project/src/database/database.sqlite
 
-RUN chmod -R 775 /opt/render/project/src/database
 # Copy Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -36,5 +33,5 @@ RUN chmod +x /entrypoint.sh
 # Final permissions
 RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
+# Start app
 CMD ["/entrypoint.sh"]
-
