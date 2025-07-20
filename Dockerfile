@@ -1,15 +1,15 @@
 FROM php:8.2-apache
 
-RUN apt-get update && apt-get install -y \
-    libzip-dev unzip git sqlite3 libsqlite3-dev curl \
-    && docker-php-ext-install zip pdo pdo_sqlite \
-    && a2enmod rewrite \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y 
+RUN libzip-dev unzip git sqlite3 libsqlite3-dev curl 
+RUN docker-php-ext-install zip pdo pdo_sqlite 
+RUN a2enmod rewrite 
+RUN rm -rf /var/lib/apt/lists/*
 
 # Install Node.js & npm
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g npm
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - 
+RUN apt-get install -y nodejs 
+RUN  npm install -g npm
 
 # Set workdir
 WORKDIR /var/www/html
@@ -24,7 +24,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Install and build frontend
-RUN npm install && npm run build
+RUN npm run build
 
 # Copy entrypoint
 COPY entrypoint.sh /entrypoint.sh
