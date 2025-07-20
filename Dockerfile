@@ -6,34 +6,32 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js (v18 LTS) and npm
+# Install Node.js v18 and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
-    && npm --version
+    && npm install -g npm
 
 WORKDIR /var/www/html
 
-# Copy Composer binary from official Composer image
+# Copy Composer from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy all files
+# Copy app files
 COPY . .
 
-# Install PHP dependencies
+# Install PHP deps
 RUN composer install --no-dev --optimize-autoloader
 
-# Install Node.js dependencies and build assets with Vite
+# Build frontend assets
 RUN npm install
 RUN npm run build
 
-# Set permissions for Laravel folders, including database and build assets
+# Copy and prepare entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Set permissions
 RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
-# Create SQLite database file if it doesn't exist
-RUN touch database/database.sqlite
-
-# Expose port 8000
-EXPOSE 8000
-
-# Start Laravel's built-in PHP server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Use entrypoint at runtime
+CMD ["/entrypoint.sh"]
