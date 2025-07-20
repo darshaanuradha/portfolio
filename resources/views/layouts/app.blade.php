@@ -424,7 +424,7 @@
                         </a>
                     </div>
                     <p class="text-gray-400 text-lg">&copy; {{ date('Y') }} G.B.D Anuradha. All rights reserved.</p>
-                    <p class="text-gray-500 mt-2">Crafted with ❤️ using Laravel & Livewire</p>
+                    <p class="text-gray-500 mt-2">Crafted using Laravel & Livewire</p>
                 </div>
             </div>
         </footer>
