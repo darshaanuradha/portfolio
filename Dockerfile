@@ -1,10 +1,15 @@
 FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
-    libzip-dev unzip git sqlite3 libsqlite3-dev \
+    libzip-dev unzip git sqlite3 libsqlite3-dev curl \
     && docker-php-ext-install zip pdo pdo_sqlite \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js (v18 LTS) and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && npm --version
 
 WORKDIR /var/www/html
 
@@ -17,8 +22,12 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions for Laravel folders, including database
-RUN chown -R www-data:www-data storage bootstrap/cache database
+# Install Node.js dependencies and build assets with Vite
+RUN npm install
+RUN npm run build
+
+# Set permissions for Laravel folders, including database and build assets
+RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
 # Create SQLite database file if it doesn't exist
 RUN touch database/database.sqlite
