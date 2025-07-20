@@ -6,32 +6,31 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js v18 and npm
+# Install Node.js & npm
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm
 
+# Set workdir
 WORKDIR /var/www/html
 
-# Copy Composer from official image
+# Copy Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy app files
+# Copy files
 COPY . .
 
 # Install PHP deps
 RUN composer install --no-dev --optimize-autoloader
 
-# Build frontend assets
-RUN npm install
-RUN npm run build
+# Install and build frontend
+RUN npm install && npm run build
 
-# Copy and prepare entrypoint
+# Copy entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Set permissions
+# Final permissions
 RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
-# Use entrypoint at runtime
 CMD ["/entrypoint.sh"]
